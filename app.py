@@ -3,7 +3,7 @@ import random
 
 app = Flask(__name__)
 
-# Complete Arada Bingo System - Final Production Code with Auto-Deposit Verification & Admin Withdraw
+# Complete Arada Bingo System - Final Production with Public Winner Announcement & Private False Bingo Disqualification
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="am">
@@ -77,20 +77,20 @@ HTML_TEMPLATE = """
             height: 85vh;
             text-align: center;
         }
-        /* Navigation Menu */
+        /* Navigation Menu Buttons */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 15px;
         }
         .menu-btn {
             background-color: var(--card-bg);
             border: 1px solid #334155;
-            color: var(--text-secondary);
-            padding: 8px 4px;
-            border-radius: 8px;
-            font-size: 11px;
+            color: var(--text-color);
+            padding: 12px 8px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
@@ -107,7 +107,7 @@ HTML_TEMPLATE = """
         .section.active {
             display: block;
         }
-        /* Room & Card Selection */
+        /* Room Selection */
         .room-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -156,7 +156,7 @@ HTML_TEMPLATE = """
             font-size: 12px;
             color: var(--text-secondary);
         }
-        /* Bingo Table */
+        /* Bingo Table Grid */
         .bingo-table {
             width: 100%;
             border-collapse: separate;
@@ -224,6 +224,16 @@ HTML_TEMPLATE = """
             box-sizing: border-box;
             font-size: 13px;
         }
+        /* Live Public Announcement Box */
+        .announcement-box {
+            background: #1e293b;
+            border-left: 4px solid var(--primary);
+            padding: 8px 12px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -231,17 +241,17 @@ HTML_TEMPLATE = """
     <!-- REGISTRATION SCREEN -->
     <div id="regScreen" class="container">
         <div class="card" style="width: 100%;">
-            <h2 style="color: var(--primary); margin-top: 0;">🎯 እንኳን ወደ ኢትዮ ቢንጎ ቦት መጡ</h2>
-            <p style="font-size: 13px; color: var(--text-secondary);">ለመጀመር እባክዎ ስምዎን እና ስልክ ቁጥርዎን ያስገቡ።</p>
-            <label style="text-align: left; display: block; font-size: 12px;">ሙሉ ስምዎ:</label>
-            <input type="text" id="regName" placeholder="ስምዎን ያስገቡ">
+            <h2 style="color: var(--primary); margin-top: 0;">🎯 እንኳን ወደ ኢትዮ ቢንጎ ቦት በደህና መጡ</h2>
+            <p style="font-size: 13px; color: var(--text-secondary);">ለመጀመር እባክዎ ስምዎን (ዩዘርኔም) እና ስልክ ቁጥርዎን ያስገቡ።</p>
+            <label style="text-align: left; display: block; font-size: 12px;">ስምዎ / ዩዘርኔም (ለምሳሌ @enyachew):</label>
+            <input type="text" id="regName" placeholder="@username ወይም ስምዎ">
             <label style="text-align: left; display: block; font-size: 12px;">ስልክ ቁጥር:</label>
             <input type="text" id="regPhone" placeholder="09xxxxxxxx">
-            <button class="btn-main" onclick="completeRegistration()">ተመዝግቦ መግባት</button>
+            <button class="btn-main" onclick="completeRegistration()">ቦቱን ጀምር (/start)</button>
         </div>
     </div>
 
-    <!-- MAIN APP -->
+    <!-- MAIN APP SCREEN -->
     <div id="mainApp" style="display: none; flex-direction: column; min-height: 100vh;">
         <header>
             <h1>ኢትዮ ቢንጎ ቦት</h1>
@@ -251,31 +261,38 @@ HTML_TEMPLATE = """
         <div class="container">
             <!-- Navigation Menu -->
             <div class="menu-grid">
-                <button class="menu-btn active" onclick="switchTab('play')">🎮 ጨዋታ</button>
-                <button class="menu-btn" onclick="switchTab('deposit')">💳 ዲፖዚት</button>
-                <button class="menu-btn" onclick="switchTab('withdraw')">💸 ማውጣት</button>
-                <button class="menu-btn" onclick="switchTab('invite')">👥 ጓደኛ</button>
-                <button class="menu-btn" onclick="switchTab('contact')">📞 ድጋፍ</button>
+                <button class="menu-btn active" onclick="switchTab('play')">🎮 Play</button>
+                <button class="menu-btn" onclick="switchTab('deposit')">💳 Deposit</button>
+                <button class="menu-btn" onclick="switchTab('withdraw')">💸 Withdraw</button>
+                <button class="menu-btn" onclick="switchTab('balance')">💳 Check Balance</button>
+                <button class="menu-btn" onclick="switchTab('invite')">👥 Invite</button>
+                <button class="menu-btn" onclick="switchTab('contact')">📞 Contact Us</button>
             </div>
 
             <!-- 1. PLAY SECTION -->
             <div id="play" class="section active">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 12px; color: var(--text-secondary);">ክፍል ይምረጡ:</span>
-                    <span style="font-size: 12px; color: var(--success);" id="playingStatus">ግዛት: በመጫወት ላይ (Playing)</span>
+                    <span style="font-size: 12px; color: var(--success);" id="playingStatus">ግዛት: Active (Playing)</span>
                 </div>
+                
+                <!-- Live Public Announcement Feed -->
+                <div class="announcement-box" id="publicAnnouncement">
+                    📢 <b>የቦቱ ዜና:</b> ጨዋታው በቀጣይነት በሂደት ላይ ነው! መልካም ዕድል።
+                </div>
+
                 <div class="room-grid">
                     <div class="room-card selected" onclick="selectRoom(10, this)">
-                        <h3>ባለ 10 ብር</h3>
-                        <p>ሽልማት: 220 ብር</p>
+                        <h3>10 ETB</h3>
+                        <p>ተጫዋች: 10 ሰው</p>
                     </div>
                     <div class="room-card" onclick="selectRoom(20, this)">
-                        <h3>ባለ 20 ብር</h3>
-                        <p>ሽልማት: 450 ብር</p>
+                        <h3>20 ETB</h3>
+                        <p>ተጫዋች: 10 ሰው</p>
                     </div>
                     <div class="room-card" onclick="selectRoom(50, this)">
-                        <h3>ባለ 50 ብር</h3>
-                        <p>ሽልማት: 1,150 ብር</p>
+                        <h3>50 ETB</h3>
+                        <p>ተጫዋች: 10 ሰው</p>
                     </div>
                 </div>
 
@@ -286,14 +303,14 @@ HTML_TEMPLATE = """
                     </select>
                 </div>
 
-                <!-- Live 45s Timer & Calling Board -->
+                <!-- Live 45s Timer Board -->
                 <div class="live-board">
                     <div class="timer-text">ቀጣይ ቁጥር በ <span id="countdown">45</span> ሰከንድ ውስጥ ይጠራል...</div>
-                    <div class="called-number-display" id="currentCalledNum">B-5</div>
-                    <div style="font-size: 11px; color: var(--success);" id="gameRoundInfo">ዙር #402 - የተጠሩ ቁጥሮች: <span id="calledCount">1</span></div>
+                    <div class="called-number-display" id="currentCalledNum">B-7</div>
+                    <div style="font-size: 11px; color: var(--success);" id="gameRoundInfo">ዙር በሂደት ላይ - የተጠሩ: <span id="calledCount">1</span></div>
                 </div>
 
-                <!-- B-I-N-G-O Grid -->
+                <!-- B-I-N-G-O Table Grid -->
                 <table class="bingo-table">
                     <tr>
                         <td class="bingo-header-cell" style="color:var(--b-color)">B</td>
@@ -305,17 +322,17 @@ HTML_TEMPLATE = """
                     <tbody id="bingoCardBody"></tbody>
                 </table>
 
-                <button class="btn-main" onclick="checkBingoWin()" style="background-color: var(--success); color: white;">🎉 ሉንጎ! (BINGO)</button>
+                <button id="bingoBtn" class="btn-main" onclick="checkBingoWin()" style="background-color: var(--success); color: white;">🎉 ሉንጎ! (BINGO)</button>
             </div>
 
-            <!-- 2. DEPOSIT SECTION (Auto Verified by Bot) -->
+            <!-- 2. DEPOSIT SECTION -->
             <div id="deposit" class="section">
                 <div class="card">
-                    <h3>💳 ሂሳብ ማሞቂያ (Deposit)</h3>
-                    <p style="font-size: 12px; color: var(--text-secondary);">ገንዘብ ከዚህ በታች ባሉት ትክክለኛ አካውንቶች ካስተላለፉ በኋላ የFT ሪፈረንስ ቁጥር ያስገቡ። ቦቱ ራሱ አረጋግጦ ወዲያው ይጨምራል።</p>
+                    <h3>💳 ሒሳብ ማሞቂያ (Deposit)</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary);">ገንዘብ ከዚህ በታች ባሉት አካውንቶች ካስተላለፉ በኋላ የFT ሪፈረንስ ቁጥር ያስገቡ። ቦቱ አረጋግጦ ወዲያው ይጨምራል።</p>
                     <hr style="border-color: #334155;">
-                    <p style="font-size: 13px;"><b>ንግድ ባንክ (CBE):</b> 1000682528641<br><b>ስም:</b> እንያቸው አመርጋ</p>
-                    <p style="font-size: 13px;"><b>ቴሌብር (Telebirr):</b> 0944123180<br><b>ስም:</b> እንያቸው አመርጋ</p>
+                    <p style="font-size: 13px;"><b>ንግድ ባንክ (CBE):</b> 1000682528641<br><b>ስም:</b> እንያቸው አመርጋ (Enyachew Amerga)</p>
+                    <p style="font-size: 13px;"><b>ቴሌብር (Telebirr):</b> 0944123180<br><b>ስም:</b> እንያቸው አመርጋ (Enyachew Amerga)</p>
                 </div>
                 <div class="card">
                     <label>የተላለፈው መጠን (ብር):</label>
@@ -326,7 +343,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- 3. WITHDRAW SECTION (Sent to Admin @enyachew_19) -->
+            <!-- 3. WITHDRAW SECTION -->
             <div id="withdraw" class="section">
                 <div class="card">
                     <h3>💸 ገንዘብ ማውጣት (Withdraw)</h3>
@@ -343,7 +360,16 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- 4. INVITE SECTION -->
+            <!-- 4. CHECK BALANCE SECTION -->
+            <div id="balance" class="section">
+                <div class="card" style="text-align: center;">
+                    <h3>💳 የሂሳብ ዝርዝር (Balance Summary)</h3>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin: 15px 0;">የአሁኑ የዋሌት ቀሪ ሂሳብዎ:</p>
+                    <div style="font-size: 28px; font-weight: bold; color: var(--success);" id="balanceDisplay">150.00 ብር</div>
+                </div>
+            </div>
+
+            <!-- 5. INVITE SECTION -->
             <div id="invite" class="section">
                 <div class="card" style="text-align: center;">
                     <h3>👥 ጓደኛ ይጋብዙ</h3>
@@ -353,12 +379,12 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- 5. CONTACT SECTION (Admin Username @enyachew_19) -->
+            <!-- 6. CONTACT US SECTION -->
             <div id="contact" class="section">
                 <div class="card" style="text-align: center;">
-                    <h3>📞 እገዛ እና ድጋፍ</h3>
-                    <p style="color: var(--text-secondary); font-size: 12px;">ማንኛውም ጥያቄ ካለዎት በቀጥታ አድሚኑን ያግኙ።</p>
-                    <p style="font-size: 14px; margin-top: 15px;">የአድሚን ቴሌግራም ዩዘርኔም:<br><a href="https://t.me/enyachew_19" style="color: var(--primary); font-size: 16px; font-weight: bold;" target="_blank">@enyachew_19</a></p>
+                    <h3>📞 እገዛ እና ድጋፍ (Contact Us)</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary);">ማንኛውም ጥያቄ ካለዎት በቀጥታ አድሚኑን ያግኙ።</p>
+                    <p style="font-size: 15px; margin-top: 15px;">የአድሚን ቴሌግራም ዩዘርኔም:<br><a href="https://t.me/enyachew_19" style="color: var(--primary); font-size: 18px; font-weight: bold;" target="_blank">@enyachew_19</a></p>
                 </div>
             </div>
         </div>
@@ -370,10 +396,11 @@ HTML_TEMPLATE = """
 
         let currentBalance = 150.00;
         let selectedRoomPrice = 10;
-        let registeredUser = "";
-        let usedFtNumbers = []; // Tracks used FT numbers to prevent duplicates/fakes
+        let registeredUser = "@enyachew";
+        let isDisqualified = false;
+        let usedFtNumbers = [];
 
-        // Populate 1 to 200 Card Select options
+        // Populate 1 to 200 Card Numbers
         const cardSelect = document.getElementById('cardSelect');
         for(let i=1; i<=200; i++) {
             let opt = document.createElement('option');
@@ -383,17 +410,17 @@ HTML_TEMPLATE = """
         }
 
         function completeRegistration() {
-            let name = document.getElementById('regName').value;
-            let phone = document.getElementById('regPhone').value;
+            let name = document.getElementById('regName').value.trim();
+            let phone = document.getElementById('regPhone').value.trim();
             if(!name || !phone) {
-                alert('እባክዎ ስምዎን እና ስልክ ቁጥርዎን ያስገቡ!');
+                alert('እባክዎ ስምዎን/ዩዘርኔምዎን እና ስልክ ቁጥርዎን ያስገቡ!');
                 return;
             }
-            registeredUser = name;
+            registeredUser = name.startsWith('@') ? name : '@' + name;
             document.getElementById('regScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'flex';
             generateCard();
-            alert(`እንኳን ደስ አለዎት ${name}! ምዝገባው ተጠናቋል።`);
+            alert(`እንኳን ደስ አለዎት ${registeredUser}! ምዝገባው ተጠናቋል።`);
         }
 
         function switchTab(tabId) {
@@ -407,14 +434,23 @@ HTML_TEMPLATE = """
             document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
             element.classList.add('selected');
             selectedRoomPrice = price;
+            isDisqualified = false;
+            document.getElementById('bingoBtn').disabled = false;
+            document.getElementById('bingoBtn').style.opacity = '1';
+
             if(currentBalance < price) {
-                alert('ሒሳብዎ በቂ አይደለም! እባክዎ መጀመሪያ ዲፖዚት ያድርጉ።');
+                alert('❌ ሒሳብዎ በቂ አይደለም! Low balance. እባክዎ መጀመሪያ ዲፖዚት ያድርጉ።');
             } else {
                 currentBalance -= price;
-                document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
-                alert(`የባለ ${price} ብር ክፍል ተቀላቅለዋል! ጨዋታው ተጀምሯል።`);
+                updateBalanceDisplay();
+                alert(`የባለ ${price} ብር ክፍል ተቀላቅለዋል! ጨዋታው በቀጣይነት በሂደት ላይ ነው።`);
                 generateCard();
             }
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
+            document.getElementById('balanceDisplay').innerText = currentBalance.toFixed(2) + " ብር";
         }
 
         function changeCardNumber() {
@@ -453,7 +489,9 @@ HTML_TEMPLATE = """
                         let val = cols[c][r];
                         td.innerText = val;
                         td.onclick = function() {
-                            this.classList.toggle('marked');
+                            if(!isDisqualified) {
+                                this.classList.toggle('marked');
+                            }
                         };
                         rowData.push(val);
                     }
@@ -473,7 +511,7 @@ HTML_TEMPLATE = """
             return arr.sort((a,b) => a - b);
         }
 
-        // 45 Seconds Live Timer & Calling System
+        // Live Calling & Timer (45s)
         let timerCount = 45;
         setInterval(() => {
             timerCount--;
@@ -497,8 +535,13 @@ HTML_TEMPLATE = """
             }
         }, 1000);
 
-        // Strict Bingo Verification Logic
+        // Instant Bingo Verification with 20% Hidden Commission, Public Announcement & Private Disqualification
         function checkBingoWin() {
+            if(isDisqualified) {
+                alert('❌ የውሸት ቢንጎ ብለው ስለተጫኑ ከዚህ ዙር ጨዋታ ውጪ ነዎት። ጨዋታው ግን ለሌሎች ቀጥሏል!');
+                return;
+            }
+
             let markedCells = document.querySelectorAll('.bingo-cell.marked');
             let isValid = true;
             
@@ -513,16 +556,29 @@ HTML_TEMPLATE = """
             });
 
             if(markedCells.length >= 5 && isValid) {
-                let winAmount = selectedRoomPrice * 22;
-                currentBalance += winAmount;
-                document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
-                alert(`🎉 እንኳን ደስ አለዎት! ሉንጎ (BINGO) በትክክል ተረጋግጧል! ${winAmount} ብር ወደ አካውንትዎ ገብቷል!`);
+                // Calculation: 10 players pool, 20% commission cut silently, 80% to winner
+                let totalPool = selectedRoomPrice * 10;
+                let netWinAmount = totalPool * 0.80;
+                currentBalance += netWinAmount;
+                updateBalanceDisplay();
+
+                let selectedCardNum = document.getElementById('cardSelect').value;
+
+                // Public Broadcast Announcement for Winner
+                let announcementText = `🏆 <b>አሸናፊ ተገኘ!</b> ተጫዋች <b>${registeredUser}</b> ካርቴላ ቁጥር <b>#${selectedCardNum}</b> ይዞ ሉንጎ (BINGO) አሸንፏል! ሽልማት: <b>${netWinAmount.toFixed(2)} ብር</b>`;
+                document.getElementById('publicAnnouncement').innerHTML = announcementText;
+
+                alert(`🎉 እንኳን ደስ አለዎት! ሉንጎ (BINGO) በትክክል ተረጋግጧል! ${netWinAmount.toFixed(2)} ብር ወደ ዋሌታዎ ገብቷል!`);
             } else {
-                alert('❌ ቢንጎ አልተሳካም! ያልተጠሩ ቁጥሮች ምልክት ተደርገዋል ወይም መስፈርቱ አልተሟላም። ቦቱ አጣርቶ ውድቅ አድርጎታል።');
+                // Private Disqualification for False Bingo only (Game does NOT stop)
+                isDisqualified = true;
+                document.getElementById('bingoBtn').disabled = true;
+                document.getElementById('bingoBtn').style.opacity = '0.5';
+                alert('❌ ስህተት ቢንጎ! ያልተጠራ ቁጥር ተጭነዋል። ከዚህ ዙር ጨዋታ ውጪ ሆኑ (Disqualified)፤ ጨዋታው ግን ለሌሎች ቀጥሏል!');
             }
         }
 
-        // Auto-Deposit Verification Logic by Bot
+        // Auto Deposit Logic
         function submitDeposit() {
             let amt = parseFloat(document.getElementById('depAmount').value);
             let ref = document.getElementById('depRef').value.trim();
@@ -532,27 +588,25 @@ HTML_TEMPLATE = """
                 return;
             }
 
-            // Check for fake or duplicate FT numbers
             if(usedFtNumbers.includes(ref)) {
-                alert('❌ ይህ የ FT ሪፈረንስ ቁጥር ቀደም ሲል ጥቅም ላይ ውሏል! ቦቱ አረጋግጦ ውድቅ አድርጎታል።');
+                alert('❌ ይህ የ FT ሪፈረንስ ቁጥር ቀደም ሲል ጥቅም ላይ ውሏል!');
                 return;
             }
 
             if(ref.length < 5) {
-                alert('❌ ትክክለኛ ያልሆነ የ FT ሪፈረንስ ቁጥር ነው። እባክዎ ትክክለኛ ቁጥር ያስገቡ።');
+                alert('❌ ትክክለኛ ያልሆነ የ FT ሪፈረንስ ቁጥር ነው።');
                 return;
             }
 
-            // Success: Register FT and add balance automatically
             usedFtNumbers.push(ref);
             currentBalance += amt;
-            document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
+            updateBalanceDisplay();
             alert(`✅ ክፍያዎ በቦቱ ተረጋግጧል! ${amt} ብር በትክክል ወደ ዋሌታዎ ገብቷል!`);
             document.getElementById('depAmount').value = '';
             document.getElementById('depRef').value = '';
         }
 
-        // Withdraw check against balance and send to Admin @enyachew_19
+        // Withdraw Logic
         function submitWithdraw() {
             let method = document.getElementById('wMethod').value;
             let account = document.getElementById('wAccount').value.trim();
@@ -569,13 +623,12 @@ HTML_TEMPLATE = """
             }
 
             if(amount > currentBalance) {
-                alert('❌ በቂ ሂሳብ የለዎትም! የባላንስዎ መጠን ከሚጠይቁት ገንዘብ ያንሳል።');
+                alert('❌ በቂ ሂሳብ የለዎትም!');
                 return;
             }
 
-            // Deduct balance from wallet
             currentBalance -= amount;
-            document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
+            updateBalanceDisplay();
 
             alert(`💸 የማውጣት ጥያቄዎ ተመዝግቧል! ሒሳብዎ ከዋሌትዎ ቀንሷል። ጥያቄው በአድሚን ዩዘርኔም @enyachew_19 በኩል ተረጋግጦ ይለቀቃል።`);
             document.getElementById('wAccount').value = '';
