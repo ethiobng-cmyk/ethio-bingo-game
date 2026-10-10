@@ -3,7 +3,7 @@ import random
 
 app = Flask(__name__)
 
-# Complete Arada Bingo System - Final Production UI Matching Reference Screenshots
+# Complete Arada Bingo System - Exact Production Standard
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="am">
@@ -40,7 +40,7 @@ HTML_TEMPLATE = """
         }
         header {
             background-color: var(--card-bg);
-            padding: 12px 15px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -48,13 +48,13 @@ HTML_TEMPLATE = """
         }
         h1 {
             margin: 0;
-            font-size: 18px;
+            font-size: 16px;
             color: var(--primary);
         }
         .user-balance {
-            font-size: 13px;
+            font-size: 12px;
             background: #0f172a;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
             border: 1px solid #334155;
             color: var(--success);
@@ -62,7 +62,7 @@ HTML_TEMPLATE = """
         }
         .container {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             max-width: 480px;
             margin: 0 auto;
             width: 100%;
@@ -77,28 +77,24 @@ HTML_TEMPLATE = """
             height: 85vh;
             text-align: center;
         }
-        /* Telegram Bot Style Menu Grid (Matching Reference Images) */
+        /* Telegram Bot Style Menu Grid */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
         .menu-btn {
             background-color: var(--card-bg);
             border: 1px solid #334155;
             color: var(--text-color);
-            padding: 14px 10px;
+            padding: 12px 10px;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         .menu-btn.active, .menu-btn:hover {
             background-color: var(--primary);
@@ -112,34 +108,75 @@ HTML_TEMPLATE = """
             display: block;
         }
         /* Room Selection */
-        .room-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-        }
         .room-card {
             background: var(--card-bg);
-            border: 2px solid #334155;
+            border: 1px solid #334155;
             border-radius: 10px;
             padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .room-card.selected {
-            border-color: var(--primary);
-            background: #1e293b;
-        }
-        .room-card h3 {
-            margin: 0 0 4px 0;
+        .room-info h3 {
+            margin: 0 0 2px 0;
             font-size: 14px;
             color: var(--primary);
         }
-        .room-card p {
+        .room-info p {
             margin: 0;
             font-size: 11px;
             color: var(--text-secondary);
+        }
+        /* Game Top Header Stats Bar */
+        .game-stats-bar {
+            background: #b45309;
+            color: #fff;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            text-align: center;
+            padding: 6px 4px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .game-stats-bar div span {
+            display: block;
+            font-size: 13px;
+        }
+        /* Card Selection Grid (1-200) */
+        .card-selection-box {
+            background: #7c3aed;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            margin: 8px 0;
+            background: #6d28d9;
+            padding: 6px;
+            border-radius: 8px;
+        }
+        .num-btn {
+            background: #a78bfa;
+            border: none;
+            color: #fff;
+            aspect-ratio: 1;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .num-btn.selected {
+            background: var(--success) !important;
+            color: #fff;
         }
         /* Live Board */
         .live-board {
@@ -147,34 +184,30 @@ HTML_TEMPLATE = """
             border-radius: 12px;
             padding: 10px;
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border: 1px solid #334155;
         }
         .called-number-display {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: var(--primary);
-            margin: 4px 0;
-        }
-        .timer-text {
-            font-size: 12px;
-            color: var(--text-secondary);
+            margin: 2px 0;
         }
         /* Bingo Table Grid */
         .bingo-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 4px;
-            margin-bottom: 12px;
+            border-spacing: 3px;
+            margin-bottom: 10px;
         }
         .bingo-header-cell {
             background: #0f172a;
             color: #fff;
             text-align: center;
-            padding: 6px 0;
+            padding: 5px 0;
             font-weight: bold;
-            font-size: 15px;
-            border-radius: 6px;
+            font-size: 14px;
+            border-radius: 4px;
         }
         .bingo-cell {
             background-color: var(--card-bg);
@@ -182,11 +215,10 @@ HTML_TEMPLATE = """
             aspect-ratio: 1;
             text-align: center;
             vertical-align: middle;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            user-select: none;
             color: #fff;
         }
         .bingo-cell.marked {
@@ -196,7 +228,7 @@ HTML_TEMPLATE = """
         .bingo-cell.free-cell {
             background-color: var(--success) !important;
             color: #fff !important;
-            font-size: 10px;
+            font-size: 9px;
         }
         .btn-main {
             background-color: var(--primary);
@@ -205,7 +237,7 @@ HTML_TEMPLATE = """
             width: 100%;
             padding: 12px;
             border-radius: 10px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 5px;
@@ -228,14 +260,24 @@ HTML_TEMPLATE = """
             box-sizing: border-box;
             font-size: 13px;
         }
-        .announcement-box {
+        /* Winner Modal Popup */
+        #winnerModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
             background: #1e293b;
-            border-left: 4px solid var(--primary);
-            padding: 8px 12px;
-            font-size: 12px;
-            margin-bottom: 12px;
-            border-radius: 4px;
-            color: var(--text-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+            border: 2px solid var(--primary);
         }
     </style>
 </head>
@@ -244,10 +286,10 @@ HTML_TEMPLATE = """
     <!-- REGISTRATION SCREEN -->
     <div id="regScreen" class="container">
         <div class="card" style="width: 100%;">
-            <h2 style="color: var(--primary); margin-top: 0;">🎯 እንኳን ወደ ኢትዮ ቢንጎ ቦት በደህና መጡ</h2>
-            <p style="font-size: 13px; color: var(--text-secondary);">ለመጀመር እባክዎ ስምዎን (ዩዘርኔም) እና ስልክ ቁጥርዎን ያስገቡ።</p>
-            <label style="text-align: left; display: block; font-size: 12px;">ስምዎ / ዩዘርኔም (ለምሳሌ @enyachew):</label>
-            <input type="text" id="regName" placeholder="@username ወይም ስምዎ">
+            <h2 style="color: var(--primary); margin-top: 0;">🎯 እንኳን ወደ ኢትዮ ቢንጎ ቦት</h2>
+            <p style="font-size: 13px; color: var(--text-secondary);">ለመጀመር ዩዘርኔም እና ስልክ ቁጥር ያስገቡ።</p>
+            <label style="text-align: left; display: block; font-size: 12px;">ዩዘርኔም (ለምሳሌ @enyachew):</label>
+            <input type="text" id="regName" placeholder="@username">
             <label style="text-align: left; display: block; font-size: 12px;">ስልክ ቁጥር:</label>
             <input type="text" id="regPhone" placeholder="09xxxxxxxx">
             <button class="btn-main" onclick="completeRegistration()">ቦቱን ጀምር (/start)</button>
@@ -262,7 +304,7 @@ HTML_TEMPLATE = """
         </header>
 
         <div class="container">
-            <!-- Telegram Bot Style Menu Grid (Matched with reference images) -->
+            <!-- Telegram Bot Style Menu Grid -->
             <div class="menu-grid">
                 <button class="menu-btn active" onclick="switchTab('play')">🎮 Play</button>
                 <button class="menu-btn" onclick="switchTab('deposit')">💳 Deposit</button>
@@ -274,57 +316,77 @@ HTML_TEMPLATE = """
 
             <!-- 1. PLAY SECTION -->
             <div id="play" class="section active">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-size: 12px; color: var(--text-secondary);">ክፍል ይምረጡ:</span>
-                    <span style="font-size: 12px; color: var(--success);" id="playingStatus">ግዛት: Active (Playing)</span>
-                </div>
-                
-                <div class="announcement-box" id="publicAnnouncement">
-                    📢 <b>የቦቱ ዜና:</b> ጨዋታው በቀጣይነት በሂደት ላይ ነው! መልካም ዕድል።
-                </div>
-
-                <div class="room-grid">
-                    <div class="room-card selected" onclick="selectRoom(10, this)">
-                        <h3>10 ETB</h3>
-                        <p>ተጫዋች: 10 ሰው</p>
+                <!-- Room Selection List matching Arada Bingo -->
+                <div id="roomSelectionView">
+                    <h3 style="color: var(--primary); font-size: 14px; margin-bottom: 8px;">የጨዋታ ክፍሎች (Stakes)</h3>
+                    
+                    <div class="room-card">
+                        <div class="room-info">
+                            <h3>10 ETB</h3>
+                            <p>ተጫዋች: 74 ሰው | ድምር: 740 ብር</p>
+                        </div>
+                        <button class="btn-main" style="width: 80px; padding: 8px; margin: 0;" onclick="joinRoom(10)">Play</button>
                     </div>
-                    <div class="room-card" onclick="selectRoom(20, this)">
-                        <h3>20 ETB</h3>
-                        <p>ተጫዋች: 10 ሰው</p>
+
+                    <div class="room-card">
+                        <div class="room-info">
+                            <h3>20 ETB</h3>
+                            <p>ተጫዋች: 84 ሰው | ድምር: 1680 ብር</p>
+                        </div>
+                        <button class="btn-main" style="width: 80px; padding: 8px; margin: 0; background: #64748b; color: #fff;" disabled>playing</button>
                     </div>
-                    <div class="room-card" onclick="selectRoom(50, this)">
-                        <h3>50 ETB</h3>
-                        <p>ተጫዋች: 10 ሰው</p>
+
+                    <div class="room-card">
+                        <div class="room-info">
+                            <h3>50 ETB</h3>
+                            <p>ተጫዋች: 63 ሰው | ድምር: 3150 ብር</p>
+                        </div>
+                        <button class="btn-main" style="width: 80px; padding: 8px; margin: 0;" onclick="joinRoom(50)">Play</button>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 8px;">
-                    <label style="font-size: 12px; color: var(--text-secondary);">ካርቴላ ቁጥር ይምረጡ (ከ 1 እስከ 200):</label>
-                    <select id="cardSelect" onchange="changeCardNumber()">
-                        <!-- Populated via JS -->
-                    </select>
+                <!-- Active Game Board View (Hidden until room joined & card selected) -->
+                <div id="activeGameView" style="display: none;">
+                    <!-- Game Top Stats Bar -->
+                    <div class="game-stats-bar">
+                        <div>Game ID<span id="statGameId">10</span></div>
+                        <div>Derash<span id="statDerash">740</span></div>
+                        <div>Players<span id="statPlayers">74</span></div>
+                        <div>Bet<span id="statBet">10</span></div>
+                        <div>Call<span id="statCall">0</span></div>
+                    </div>
+
+                    <!-- Card Selection (1-200) Box -->
+                    <div class="card-selection-box">
+                        <div style="font-size: 13px; font-weight: bold; color: #fff;">ካርቴላ ቁጥር ይምረጡ (ከ 1 እስከ 200)</div>
+                        <div class="number-grid" id="numGrid1To100"></div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                            <button class="btn-main" style="width: 48%; padding: 6px; font-size: 11px; background: #4c1d95; color:#fff;" onclick="toggleCardRange()">Show/Hide 100-200</button>
+                            <button class="btn-main" style="width: 48%; padding: 6px; font-size: 11px;" onclick="confirmCardSelection()">ይህንን ካርቴላ ምረጥ</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Board -->
+                    <div class="live-board">
+                        <div style="font-size: 11px; color: var(--text-secondary);">ቀጣይ ቁጥር በ <span id="countdown">45</span> ሰከንድ ውስጥ ይጠራል...</div>
+                        <div class="called-number-display" id="currentCalledNum">--</div>
+                        <div style="font-size: 11px; color: var(--success);" id="selectedCardLabel">የተመረጠ ካርቴላ: #1</div>
+                    </div>
+
+                    <!-- B-I-N-G-O Table Grid -->
+                    <table class="bingo-table">
+                        <tr>
+                            <td class="bingo-header-cell" style="color:var(--b-color)">B</td>
+                            <td class="bingo-header-cell" style="color:var(--i-color)">I</td>
+                            <td class="bingo-header-cell" style="color:var(--n-color)">N</td>
+                            <td class="bingo-header-cell" style="color:var(--g-color)">G</td>
+                            <td class="bingo-header-cell" style="color:var(--o-color)">O</td>
+                        </tr>
+                        <tbody id="bingoCardBody"></tbody>
+                    </table>
+
+                    <button id="bingoBtn" class="btn-main" onclick="checkBingoWin()" style="background-color: #ef4444; color: white; font-size: 18px; padding: 14px;">BINGO!</button>
                 </div>
-
-                <!-- Live 45s Timer Board -->
-                <div class="live-board">
-                    <div class="timer-text">ቀጣይ ቁጥር በ <span id="countdown">45</span> ሰከንድ ውስጥ ይጠራል...</div>
-                    <div class="called-number-display" id="currentCalledNum">B-7</div>
-                    <div style="font-size: 11px; color: var(--success);" id="gameRoundInfo">ዙር በሂደት ላይ - የተጠሩ: <span id="calledCount">1</span></div>
-                </div>
-
-                <!-- B-I-N-G-O Table Grid -->
-                <table class="bingo-table">
-                    <tr>
-                        <td class="bingo-header-cell" style="color:var(--b-color)">B</td>
-                        <td class="bingo-header-cell" style="color:var(--i-color)">I</td>
-                        <td class="bingo-header-cell" style="color:var(--n-color)">N</td>
-                        <td class="bingo-header-cell" style="color:var(--g-color)">G</td>
-                        <td class="bingo-header-cell" style="color:var(--o-color)">O</td>
-                    </tr>
-                    <tbody id="bingoCardBody"></tbody>
-                </table>
-
-                <button id="bingoBtn" class="btn-main" onclick="checkBingoWin()" style="background-color: var(--success); color: white;">🎉 ሉንጎ! (BINGO)</button>
             </div>
 
             <!-- 2. DEPOSIT SECTION -->
@@ -392,6 +454,15 @@ HTML_TEMPLATE = """
         </div>
     </div>
 
+    <!-- WINNER MODAL POPUP -->
+    <div id="winnerModal">
+        <div class="modal-content">
+            <h3 id="winnerTitle" style="color: var(--primary); margin-top: 0;">Beti Won 🎉</h3>
+            <p id="winnerAmountText" style="font-size: 14px; color: var(--text-secondary);">Amount: 1360 Birr</p>
+            <button class="btn-main" onclick="closeWinnerModal()">Play Again</button>
+        </div>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -399,29 +470,39 @@ HTML_TEMPLATE = """
         let currentBalance = 150.00;
         let selectedRoomPrice = 10;
         let registeredUser = "@enyachew";
+        let selectedCardNumber = 1;
         let isDisqualified = false;
         let usedFtNumbers = [];
 
-        // Populate 1 to 200 Card Numbers
-        const cardSelect = document.getElementById('cardSelect');
+        // Build 1 to 200 Card Number buttons in selection box
+        const numGrid = document.getElementById('numGrid1To100');
         for(let i=1; i<=200; i++) {
-            let opt = document.createElement('option');
-            opt.value = i;
-            opt.innerText = `ካርቴላ ቁጥር #${i}`;
-            cardSelect.appendChild(opt);
+            let btn = document.createElement('button');
+            btn.className = 'num-btn';
+            btn.innerText = i;
+            if(i === 1) btn.classList.add('selected');
+            btn.onclick = function() {
+                document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCardNumber = i;
+            };
+            numGrid.appendChild(btn);
+        }
+
+        function toggleCardRange() {
+            numGrid.scrollTop += 50; // Scroll through 1-200 range easily
         }
 
         function completeRegistration() {
             let name = document.getElementById('regName').value.trim();
             let phone = document.getElementById('regPhone').value.trim();
             if(!name || !phone) {
-                alert('እባክዎ ስምዎን/ዩዘርኔምዎን እና ስልክ ቁጥርዎን ያስገቡ!');
+                alert('እባክዎ ዩዘርኔም እና ስልክ ቁጥር ያስገቡ!');
                 return;
             }
             registeredUser = name.startsWith('@') ? name : '@' + name;
             document.getElementById('regScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'flex';
-            generateCard();
             alert(`እንኳን ደስ አለዎት ${registeredUser}! ምዝገባው ተጠናቋል።`);
         }
 
@@ -432,31 +513,30 @@ HTML_TEMPLATE = """
             document.getElementById(tabId).classList.add('active');
         }
 
-        function selectRoom(price, element) {
-            document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedRoomPrice = price;
-            isDisqualified = false;
-            document.getElementById('bingoBtn').disabled = false;
-            document.getElementById('bingoBtn').style.opacity = '1';
-
+        function joinRoom(price) {
             if(currentBalance < price) {
-                alert('❌ ሒሳብዎ በቂ አይደለም! Low balance. እባክዎ መጀመሪያ ዲፖዚት ያድርጉ።');
-            } else {
-                currentBalance -= price;
-                updateBalanceDisplay();
-                alert(`የባለ ${price} ብር ክፍል ተቀላቅለዋል! ጨዋታው በቀጣይነት በሂደት ላይ ነው።`);
-                generateCard();
+                alert('❌ ሒሳብዎ በቂ አይደለም! (Low balance). እባክዎ መጀመሪያ ዲፖዚት ያድርጉ።');
+                return;
             }
+            currentBalance -= price;
+            updateBalanceDisplay();
+            selectedRoomPrice = price;
+
+            document.getElementById('roomSelectionView').style.display = 'none';
+            document.getElementById('activeGameView').style.display = 'block';
+            document.getElementById('statBet').innerText = price;
+            document.getElementById('statDerash').innerText = price * 74;
+            generateCard();
+        }
+
+        function confirmCardSelection() {
+            document.getElementById('selectedCardLabel').innerText = `የተመረጠ ካርቴላ: #${selectedCardNumber}`;
+            alert(`ካርቴላ ቁጥር #${selectedCardNumber} ተመርጧል! ጨዋታው ተጀምሯል።`);
         }
 
         function updateBalanceDisplay() {
             document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
             document.getElementById('balanceDisplay').innerText = currentBalance.toFixed(2) + " ብር";
-        }
-
-        function changeCardNumber() {
-            generateCard();
         }
 
         let playerCardData = [];
@@ -515,11 +595,15 @@ HTML_TEMPLATE = """
 
         // Live Calling & Timer (45s)
         let timerCount = 45;
+        let callCountVal = 0;
         setInterval(() => {
             timerCount--;
             document.getElementById('countdown').innerText = timerCount;
             if (timerCount <= 0) {
                 timerCount = 45;
+                callCountVal++;
+                document.getElementById('statCall').innerText = callCountVal;
+
                 let letters = ['B', 'I', 'N', 'G', 'O'];
                 let letter = letters[Math.floor(Math.random() * letters.length)];
                 let num = Math.floor(Math.random() * 15) + 1;
@@ -533,14 +617,13 @@ HTML_TEMPLATE = """
                 if(!allCalledNumbers.includes(num)) {
                     allCalledNumbers.push(num);
                 }
-                document.getElementById('calledCount').innerText = allCalledNumbers.length;
             }
         }, 1000);
 
-        // Instant Bingo Verification with 20% Hidden Commission & Public Announcement
+        // Strict Bingo Verification with 20% Hidden Commission & Popup Announcement
         function checkBingoWin() {
             if(isDisqualified) {
-                alert('❌ የውሸት ቢንጎ ብለው ስለተጫኑ ከዚህ ዙር ጨዋታ ውጪ ነዎት። ጨዋታው ግን ለሌሎች ቀጥሏል!');
+                alert('❌ የውሸት ቢንጎ ብለው ስለተጫኑ ከዚህ ዙር ውጪ ሆኑ!');
                 return;
             }
 
@@ -558,22 +641,30 @@ HTML_TEMPLATE = """
             });
 
             if(markedCells.length >= 5 && isValid) {
-                let totalPool = selectedRoomPrice * 10;
+                let totalPool = selectedRoomPrice * 74;
                 let netWinAmount = totalPool * 0.80; // 20% house commission deducted silently
                 currentBalance += netWinAmount;
                 updateBalanceDisplay();
 
-                let selectedCardNum = document.getElementById('cardSelect').value;
-                let announcementText = `🏆 <b>አሸናፊ ተገኘ!</b> ተጫዋች <b>${registeredUser}</b> ካርቴላ ቁጥር <b>#${selectedCardNum}</b> ይዞ ሉንጎ (BINGO) አሸንፏል! ሽልማት: <b>${netWinAmount.toFixed(2)} ብር</b>`;
-                document.getElementById('publicAnnouncement').innerHTML = announcementText;
-
-                alert(`🎉 እንኳን ደስ አለዎት! ሉንጎ (BINGO) በትክክል ተረጋግጧል! ${netWinAmount.toFixed(2)} ብር ወደ ዋሌታዎ ገብቷል!`);
+                // Show Arada Bingo Winner Modal
+                document.getElementById('winnerTitle').innerText = `${registeredUser} Won 🎉`;
+                document.getElementById('winnerAmountText').innerText = `Amount: ${netWinAmount.toFixed(2)} Birr (Board No.${selectedCardNumber})`;
+                document.getElementById('winnerModal').style.display = 'flex';
             } else {
                 isDisqualified = true;
                 document.getElementById('bingoBtn').disabled = true;
                 document.getElementById('bingoBtn').style.opacity = '0.5';
-                alert('❌ ስህተት ቢንጎ! ያልተጠራ ቁጥር ተጭነዋል። ከዚህ ዙር ጨዋታ ውጪ ሆኑ (Disqualified)፤ ጨዋታው ግን ለሌሎች ቀጥሏል!');
+                alert('❌ ስህተት ቢንጎ! ያልተጠራ ቁጥር ተጭነዋል። ከዚህ ዙር ውጪ ሆኑ (Disqualified)፤ ጨዋታው ግን ለሌሎች ቀጥሏል!');
             }
+        }
+
+        function closeWinnerModal() {
+            document.getElementById('winnerModal').style.display = 'none';
+            document.getElementById('activeGameView').style.display = 'none';
+            document.getElementById('roomSelectionView').style.display = 'block';
+            isDisqualified = false;
+            document.getElementById('bingoBtn').disabled = false;
+            document.getElementById('bingoBtn').style.opacity = '1';
         }
 
         // Auto Deposit Logic
@@ -643,3 +734,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
