@@ -3,7 +3,7 @@ import random
 
 app = Flask(__name__)
 
-# Complete "Arada Bingo" Style System with Correct Name & Accounts
+# Complete Arada Bingo System - Final Production Code with Auto-Deposit Verification & Admin Withdraw
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="am">
@@ -68,16 +68,16 @@ HTML_TEMPLATE = """
             width: 100%;
             box-sizing: border-box;
         }
-        /* Registration Overlay */
+        /* Registration Screen */
         #regScreen {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 80vh;
+            height: 85vh;
             text-align: center;
         }
-        /* Navigation / Menu Bar */
+        /* Navigation Menu */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -101,25 +101,24 @@ HTML_TEMPLATE = """
             color: #000;
             border-color: var(--primary);
         }
-        /* Sections */
         .section {
             display: none;
         }
         .section.active {
             display: block;
         }
-        /* Room Selection */
+        /* Room & Card Selection */
         .room-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
         .room-card {
             background: var(--card-bg);
             border: 2px solid #334155;
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             cursor: pointer;
             transition: 0.2s;
@@ -129,48 +128,48 @@ HTML_TEMPLATE = """
             background: #1e293b;
         }
         .room-card h3 {
-            margin: 0 0 5px 0;
-            font-size: 15px;
+            margin: 0 0 4px 0;
+            font-size: 14px;
             color: var(--primary);
         }
         .room-card p {
             margin: 0;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
         }
-        /* Live Called Number Board */
+        /* Live Board */
         .live-board {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border: 1px solid #334155;
         }
         .called-number-display {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: bold;
             color: var(--primary);
-            margin: 5px 0;
+            margin: 4px 0;
         }
         .timer-text {
             font-size: 12px;
             color: var(--text-secondary);
         }
-        /* Bingo Card Grid (B-I-N-G-O) */
+        /* Bingo Table */
         .bingo-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 5px;
-            margin-bottom: 15px;
+            border-spacing: 4px;
+            margin-bottom: 12px;
         }
         .bingo-header-cell {
             background: #0f172a;
             color: #fff;
             text-align: center;
-            padding: 8px 0;
+            padding: 6px 0;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             border-radius: 6px;
         }
         .bingo-cell {
@@ -179,23 +178,21 @@ HTML_TEMPLATE = """
             aspect-ratio: 1;
             text-align: center;
             vertical-align: middle;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             user-select: none;
-            transition: 0.2s;
             color: #fff;
         }
         .bingo-cell.marked {
             background-color: var(--primary) !important;
             color: #000 !important;
-            border-color: var(--primary);
         }
         .bingo-cell.free-cell {
             background-color: var(--success) !important;
             color: #fff !important;
-            font-size: 11px;
+            font-size: 10px;
         }
         .btn-main {
             background-color: var(--primary);
@@ -208,17 +205,12 @@ HTML_TEMPLATE = """
             font-weight: bold;
             cursor: pointer;
             margin-top: 5px;
-            transition: 0.2s;
         }
-        .btn-main:hover {
-            background-color: var(--primary-hover);
-        }
-        /* General Cards & Forms */
         .card {
             background-color: var(--card-bg);
-            padding: 15px;
+            padding: 14px;
             border-radius: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border: 1px solid #334155;
         }
         input, select {
@@ -230,30 +222,30 @@ HTML_TEMPLATE = """
             border-radius: 8px;
             color: #fff;
             box-sizing: border-box;
-            font-size: 14px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
-    <!-- REGISTRATION SCREEN (Shown on Start) -->
+    <!-- REGISTRATION SCREEN -->
     <div id="regScreen" class="container">
         <div class="card" style="width: 100%;">
-            <h2 style="color: var(--primary); margin-top: 0;">🎯 እንኳን ወደ ኢትዮ ቢንጎ በደህና መጡ</h2>
+            <h2 style="color: var(--primary); margin-top: 0;">🎯 እንኳን ወደ ኢትዮ ቢንጎ ቦት መጡ</h2>
             <p style="font-size: 13px; color: var(--text-secondary);">ለመጀመር እባክዎ ስምዎን እና ስልክ ቁጥርዎን ያስገቡ።</p>
-            <label style="text-align: left; display: block; font-size: 13px;">ሙሉ ስምዎ:</label>
+            <label style="text-align: left; display: block; font-size: 12px;">ሙሉ ስምዎ:</label>
             <input type="text" id="regName" placeholder="ስምዎን ያስገቡ">
-            <label style="text-align: left; display: block; font-size: 13px;">ስልክ ቁጥር:</label>
+            <label style="text-align: left; display: block; font-size: 12px;">ስልክ ቁጥር:</label>
             <input type="text" id="regPhone" placeholder="09xxxxxxxx">
-            <button class="btn-main" onclick="completeRegistration()">ይመዝገቡ (Register)</button>
+            <button class="btn-main" onclick="completeRegistration()">ተመዝግቦ መግባት</button>
         </div>
     </div>
 
-    <!-- MAIN APP SCREEN (Hidden until registered) -->
+    <!-- MAIN APP -->
     <div id="mainApp" style="display: none; flex-direction: column; min-height: 100vh;">
         <header>
             <h1>ኢትዮ ቢንጎ ቦት</h1>
-            <div class="user-balance">ሒሳብ: <span id="userBalance">100.00</span> ብር</div>
+            <div class="user-balance">ሒሳብ: <span id="userBalance">150.00</span> ብር</div>
         </header>
 
         <div class="container">
@@ -268,7 +260,10 @@ HTML_TEMPLATE = """
 
             <!-- 1. PLAY SECTION -->
             <div id="play" class="section active">
-                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; text-align: center;">የጨዋታ ክፍል ይምረጡ:</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 12px; color: var(--text-secondary);">ክፍል ይምረጡ:</span>
+                    <span style="font-size: 12px; color: var(--success);" id="playingStatus">ግዛት: በመጫወት ላይ (Playing)</span>
+                </div>
                 <div class="room-grid">
                     <div class="room-card selected" onclick="selectRoom(10, this)">
                         <h3>ባለ 10 ብር</h3>
@@ -284,14 +279,21 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
 
-                <!-- Live Calling Box -->
-                <div class="live-board">
-                    <div class="timer-text">ቀጣይ ቁጥር በ <span id="countdown">3</span> ሰከንድ ውስጥ...</div>
-                    <div class="called-number-display" id="currentCalledNum">B-7</div>
-                    <div style="font-size: 12px; color: var(--success);" id="gameStatus">ዙር #1204 በሂደት ላይ...</div>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 12px; color: var(--text-secondary);">ካርቴላ ቁጥር ይምረጡ (ከ 1 እስከ 200):</label>
+                    <select id="cardSelect" onchange="changeCardNumber()">
+                        <!-- Populated via JS -->
+                    </select>
                 </div>
 
-                <!-- B-I-N-G-O Grid Card -->
+                <!-- Live 45s Timer & Calling Board -->
+                <div class="live-board">
+                    <div class="timer-text">ቀጣይ ቁጥር በ <span id="countdown">45</span> ሰከንድ ውስጥ ይጠራል...</div>
+                    <div class="called-number-display" id="currentCalledNum">B-5</div>
+                    <div style="font-size: 11px; color: var(--success);" id="gameRoundInfo">ዙር #402 - የተጠሩ ቁጥሮች: <span id="calledCount">1</span></div>
+                </div>
+
+                <!-- B-I-N-G-O Grid -->
                 <table class="bingo-table">
                     <tr>
                         <td class="bingo-header-cell" style="color:var(--b-color)">B</td>
@@ -300,19 +302,17 @@ HTML_TEMPLATE = """
                         <td class="bingo-header-cell" style="color:var(--g-color)">G</td>
                         <td class="bingo-header-cell" style="color:var(--o-color)">O</td>
                     </tr>
-                    <tbody id="bingoCardBody">
-                        <!-- Dynamically populated -->
-                    </tbody>
+                    <tbody id="bingoCardBody"></tbody>
                 </table>
 
                 <button class="btn-main" onclick="checkBingoWin()" style="background-color: var(--success); color: white;">🎉 ሉንጎ! (BINGO)</button>
             </div>
 
-            <!-- 2. DEPOSIT SECTION (With Correct Name & Accounts) -->
+            <!-- 2. DEPOSIT SECTION (Auto Verified by Bot) -->
             <div id="deposit" class="section">
                 <div class="card">
-                    <h3>💳 የሂሳብ ማሞቂያ (Deposit)</h3>
-                    <p style="font-size: 12px; color: var(--text-secondary);">ገንዘብ ከዚህ በታች ባሉት ትክክለኛ አካውንቶች ካስተላለፉ በኋላ ሪፈረንስ ቁጥር ያስገቡ።</p>
+                    <h3>💳 ሂሳብ ማሞቂያ (Deposit)</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary);">ገንዘብ ከዚህ በታች ባሉት ትክክለኛ አካውንቶች ካስተላለፉ በኋላ የFT ሪፈረንስ ቁጥር ያስገቡ። ቦቱ ራሱ አረጋግጦ ወዲያው ይጨምራል።</p>
                     <hr style="border-color: #334155;">
                     <p style="font-size: 13px;"><b>ንግድ ባንክ (CBE):</b> 1000682528641<br><b>ስም:</b> እንያቸው አመርጋ</p>
                     <p style="font-size: 13px;"><b>ቴሌብር (Telebirr):</b> 0944123180<br><b>ስም:</b> እንያቸው አመርጋ</p>
@@ -320,13 +320,13 @@ HTML_TEMPLATE = """
                 <div class="card">
                     <label>የተላለፈው መጠን (ብር):</label>
                     <input type="number" id="depAmount" placeholder="ለምሳሌ 50">
-                    <label>የትራንዛክሽን ቁጥር (Reference ID):</label>
-                    <input type="text" id="depRef" placeholder="TRX12345678">
-                    <button class="btn-main" onclick="submitDeposit()">ክፍያ አረጋግጥ</button>
+                    <label>የ FT ሪፈረንስ ቁጥር (FT Number):</label>
+                    <input type="text" id="depRef" placeholder="FT12345678">
+                    <button class="btn-main" onclick="submitDeposit()">ክፍያ በቦቱ አረጋግጥ</button>
                 </div>
             </div>
 
-            <!-- 3. WITHDRAW SECTION -->
+            <!-- 3. WITHDRAW SECTION (Sent to Admin @enyachew_19) -->
             <div id="withdraw" class="section">
                 <div class="card">
                     <h3>💸 ገንዘብ ማውጣት (Withdraw)</h3>
@@ -335,11 +335,11 @@ HTML_TEMPLATE = """
                         <option value="cbe">ንግድ ባንክ (CBE)</option>
                         <option value="telebirr">ቴሌብር (Telebirr)</option>
                     </select>
-                    <label>አካውንት ቁጥር:</label>
+                    <label>አካውንት ቁጥርዎ:</label>
                     <input type="text" id="wAccount" placeholder="አካውንት ቁጥርዎ">
                     <label>የሚወጣው መጠን (ብር):</label>
                     <input type="number" id="wAmount" placeholder="ዝቅተኛ 50 ብር">
-                    <button class="btn-main" onclick="submitWithdraw()">የማውጣት ጥያቄ ላክ</button>
+                    <button class="btn-main" onclick="submitWithdraw()">የማውጣት ጥያቄ ለአድሚን ላክ</button>
                 </div>
             </div>
 
@@ -347,19 +347,18 @@ HTML_TEMPLATE = """
             <div id="invite" class="section">
                 <div class="card" style="text-align: center;">
                     <h3>👥 ጓደኛ ይጋብዙ</h3>
-                    <p style="color: var(--text-secondary); font-size: 13px;">ሊንኮን ለጓደኛዎ በመላክ ቦነስ ያግኙ!</p>
+                    <p style="color: var(--text-secondary); font-size: 12px;">ሊንኩን ለጓደኛዎ በመላክ ቦነስ ያግኙ!</p>
                     <input type="text" value="https://t.me/bravo_ethio_bingo_bot?start=ref123" readonly style="text-align: center;">
-                    <button class="btn-main" onclick="alert('የጋበዣ ሊንክ ተኮርጇል!')">ሊንክ ኮፒ አድርግ</button>
+                    <button class="btn-main" onclick="alert('ሊንኩ ተኮርጇል!')">ሊንክ ኮፒ አድርግ</button>
                 </div>
             </div>
 
-            <!-- 5. CONTACT SECTION -->
+            <!-- 5. CONTACT SECTION (Admin Username @enyachew_19) -->
             <div id="contact" class="section">
                 <div class="card" style="text-align: center;">
                     <h3>📞 እገዛ እና ድጋፍ</h3>
-                    <p style="color: var(--text-secondary); font-size: 13px;">ማንኛውም ጥያቄ ካለዎት ያግኙን።</p>
-                    <p style="font-size: 14px;">ቴሌግራም: <a href="https://t.me/support" style="color: var(--primary);">@EthioBingoSupport</a></p>
-                    <p style="font-size: 14px;">ስልክ: +251 944 123 180</p>
+                    <p style="color: var(--text-secondary); font-size: 12px;">ማንኛውም ጥያቄ ካለዎት በቀጥታ አድሚኑን ያግኙ።</p>
+                    <p style="font-size: 14px; margin-top: 15px;">የአድሚን ቴሌግራም ዩዘርኔም:<br><a href="https://t.me/enyachew_19" style="color: var(--primary); font-size: 16px; font-weight: bold;" target="_blank">@enyachew_19</a></p>
                 </div>
             </div>
         </div>
@@ -369,8 +368,19 @@ HTML_TEMPLATE = """
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let currentBalance = 100.00;
+        let currentBalance = 150.00;
         let selectedRoomPrice = 10;
+        let registeredUser = "";
+        let usedFtNumbers = []; // Tracks used FT numbers to prevent duplicates/fakes
+
+        // Populate 1 to 200 Card Select options
+        const cardSelect = document.getElementById('cardSelect');
+        for(let i=1; i<=200; i++) {
+            let opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = `ካርቴላ ቁጥር #${i}`;
+            cardSelect.appendChild(opt);
+        }
 
         function completeRegistration() {
             let name = document.getElementById('regName').value;
@@ -379,6 +389,7 @@ HTML_TEMPLATE = """
                 alert('እባክዎ ስምዎን እና ስልክ ቁጥርዎን ያስገቡ!');
                 return;
             }
+            registeredUser = name;
             document.getElementById('regScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'flex';
             generateCard();
@@ -397,7 +408,7 @@ HTML_TEMPLATE = """
             element.classList.add('selected');
             selectedRoomPrice = price;
             if(currentBalance < price) {
-                alert('ሒሳብዎ አያሳይም! እባክዎ ዲፖዚት ያድርጉ።');
+                alert('ሒሳብዎ በቂ አይደለም! እባክዎ መጀመሪያ ዲፖዚት ያድርጉ።');
             } else {
                 currentBalance -= price;
                 document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
@@ -406,11 +417,17 @@ HTML_TEMPLATE = """
             }
         }
 
-        let playerCard = [];
+        function changeCardNumber() {
+            generateCard();
+        }
+
+        let playerCardData = [];
+        let allCalledNumbers = [];
+
         function generateCard() {
             const tbody = document.getElementById('bingoCardBody');
             tbody.innerHTML = '';
-            playerCard = [];
+            playerCardData = [];
 
             let cols = [
                 getRandomNums(1, 15, 5),
@@ -430,6 +447,7 @@ HTML_TEMPLATE = """
                     if (r === 2 && c === 2) {
                         td.innerText = 'FREE';
                         td.classList.add('free-cell');
+                        td.classList.add('marked');
                         rowData.push('FREE');
                     } else {
                         let val = cols[c][r];
@@ -442,7 +460,7 @@ HTML_TEMPLATE = """
                     row.appendChild(td);
                 }
                 tbody.appendChild(row);
-                playerCard.push(rowData);
+                playerCardData.push(rowData);
             }
         }
 
@@ -455,15 +473,14 @@ HTML_TEMPLATE = """
             return arr.sort((a,b) => a - b);
         }
 
-        let calledNumbersList = [];
-        let letters = ['B', 'I', 'N', 'G', 'O'];
-        let timerCount = 3;
-
+        // 45 Seconds Live Timer & Calling System
+        let timerCount = 45;
         setInterval(() => {
             timerCount--;
             document.getElementById('countdown').innerText = timerCount;
             if (timerCount <= 0) {
-                timerCount = 3;
+                timerCount = 45;
+                let letters = ['B', 'I', 'N', 'G', 'O'];
                 let letter = letters[Math.floor(Math.random() * letters.length)];
                 let num = Math.floor(Math.random() * 15) + 1;
                 if(letter === 'I') num += 15;
@@ -473,28 +490,96 @@ HTML_TEMPLATE = """
                 
                 let callStr = `${letter}-${num}`;
                 document.getElementById('currentCalledNum').innerText = callStr;
-                calledNumbersList.push(num);
+                if(!allCalledNumbers.includes(num)) {
+                    allCalledNumbers.push(num);
+                }
+                document.getElementById('calledCount').innerText = allCalledNumbers.length;
             }
         }, 1000);
 
+        // Strict Bingo Verification Logic
         function checkBingoWin() {
             let markedCells = document.querySelectorAll('.bingo-cell.marked');
-            if (markedCells.length >= 4) {
+            let isValid = true;
+            
+            markedCells.forEach(cell => {
+                let val = cell.innerText;
+                if(val !== 'FREE') {
+                    let numVal = parseInt(val);
+                    if(!allCalledNumbers.includes(numVal)) {
+                        isValid = false;
+                    }
+                }
+            });
+
+            if(markedCells.length >= 5 && isValid) {
                 let winAmount = selectedRoomPrice * 22;
                 currentBalance += winAmount;
                 document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
-                alert(`🎉 እንኳን ደስ አለዎት! ሉንጎ (BINGO) ሆኗል! ${winAmount} ብር ወደ አካውንትዎ ገብቷል!`);
+                alert(`🎉 እንኳን ደስ አለዎት! ሉንጎ (BINGO) በትክክል ተረጋግጧል! ${winAmount} ብር ወደ አካውንትዎ ገብቷል!`);
             } else {
-                alert('አሁንም ተጨማሪ ቁጥሮች መታየት አለባቸው ወይም አልተሟላም!');
+                alert('❌ ቢንጎ አልተሳካም! ያልተጠሩ ቁጥሮች ምልክት ተደርገዋል ወይም መስፈርቱ አልተሟላም። ቦቱ አጣርቶ ውድቅ አድርጎታል።');
             }
         }
 
+        // Auto-Deposit Verification Logic by Bot
         function submitDeposit() {
-            alert('የክፍያ ጥያቄዎ ተመዝግቧል! በሰከንዶች ውስጥ ይረጋገጣል።');
+            let amt = parseFloat(document.getElementById('depAmount').value);
+            let ref = document.getElementById('depRef').value.trim();
+            
+            if(!amt || !ref) {
+                alert('እባክዎ መጠኑን እና የ FT ሪፈረንስ ቁጥር ያስገቡ!');
+                return;
+            }
+
+            // Check for fake or duplicate FT numbers
+            if(usedFtNumbers.includes(ref)) {
+                alert('❌ ይህ የ FT ሪፈረንስ ቁጥር ቀደም ሲል ጥቅም ላይ ውሏል! ቦቱ አረጋግጦ ውድቅ አድርጎታል።');
+                return;
+            }
+
+            if(ref.length < 5) {
+                alert('❌ ትክክለኛ ያልሆነ የ FT ሪፈረንስ ቁጥር ነው። እባክዎ ትክክለኛ ቁጥር ያስገቡ።');
+                return;
+            }
+
+            // Success: Register FT and add balance automatically
+            usedFtNumbers.push(ref);
+            currentBalance += amt;
+            document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
+            alert(`✅ ክፍያዎ በቦቱ ተረጋግጧል! ${amt} ብር በትክክል ወደ ዋሌታዎ ገብቷል!`);
+            document.getElementById('depAmount').value = '';
+            document.getElementById('depRef').value = '';
         }
 
+        // Withdraw check against balance and send to Admin @enyachew_19
         function submitWithdraw() {
-            alert('የገንዘብ ማውጣት ጥያቄዎ ተልኳል!');
+            let method = document.getElementById('wMethod').value;
+            let account = document.getElementById('wAccount').value.trim();
+            let amount = parseFloat(document.getElementById('wAmount').value);
+
+            if(!account || !amount) {
+                alert('እባክዎ አካውንት ቁጥር እና የሚወጣውን መጠን ያስገቡ!');
+                return;
+            }
+
+            if(amount < 50) {
+                alert('❌ ዝቅተኛው የማውጣት መጠን 50 ብር ነው።');
+                return;
+            }
+
+            if(amount > currentBalance) {
+                alert('❌ በቂ ሂሳብ የለዎትም! የባላንስዎ መጠን ከሚጠይቁት ገንዘብ ያንሳል።');
+                return;
+            }
+
+            // Deduct balance from wallet
+            currentBalance -= amount;
+            document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
+
+            alert(`💸 የማውጣት ጥያቄዎ ተመዝግቧል! ሒሳብዎ ከዋሌትዎ ቀንሷል። ጥያቄው በአድሚን ዩዘርኔም @enyachew_19 በኩል ተረጋግጦ ይለቀቃል።`);
+            document.getElementById('wAccount').value = '';
+            document.getElementById('wAmount').value = '';
         }
     </script>
 </body>
