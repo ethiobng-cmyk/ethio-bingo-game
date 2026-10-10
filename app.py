@@ -3,7 +3,7 @@ import random
 
 app = Flask(__name__)
 
-# Complete Arada Bingo System - Final Production with Public Winner Announcement & Private False Bingo Disqualification
+# Complete Arada Bingo System - Final Production UI Matching Reference Screenshots
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="am">
@@ -77,24 +77,28 @@ HTML_TEMPLATE = """
             height: 85vh;
             text-align: center;
         }
-        /* Navigation Menu Buttons */
+        /* Telegram Bot Style Menu Grid (Matching Reference Images) */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             margin-bottom: 15px;
         }
         .menu-btn {
             background-color: var(--card-bg);
             border: 1px solid #334155;
             color: var(--text-color);
-            padding: 12px 8px;
-            border-radius: 10px;
-            font-size: 13px;
+            padding: 14px 10px;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         .menu-btn.active, .menu-btn:hover {
             background-color: var(--primary);
@@ -224,7 +228,6 @@ HTML_TEMPLATE = """
             box-sizing: border-box;
             font-size: 13px;
         }
-        /* Live Public Announcement Box */
         .announcement-box {
             background: #1e293b;
             border-left: 4px solid var(--primary);
@@ -259,7 +262,7 @@ HTML_TEMPLATE = """
         </header>
 
         <div class="container">
-            <!-- Navigation Menu -->
+            <!-- Telegram Bot Style Menu Grid (Matched with reference images) -->
             <div class="menu-grid">
                 <button class="menu-btn active" onclick="switchTab('play')">🎮 Play</button>
                 <button class="menu-btn" onclick="switchTab('deposit')">💳 Deposit</button>
@@ -276,7 +279,6 @@ HTML_TEMPLATE = """
                     <span style="font-size: 12px; color: var(--success);" id="playingStatus">ግዛት: Active (Playing)</span>
                 </div>
                 
-                <!-- Live Public Announcement Feed -->
                 <div class="announcement-box" id="publicAnnouncement">
                     📢 <b>የቦቱ ዜና:</b> ጨዋታው በቀጣይነት በሂደት ላይ ነው! መልካም ዕድል።
                 </div>
@@ -373,7 +375,7 @@ HTML_TEMPLATE = """
             <div id="invite" class="section">
                 <div class="card" style="text-align: center;">
                     <h3>👥 ጓደኛ ይጋብዙ</h3>
-                    <p style="color: var(--text-secondary); font-size: 12px;">ሊንኩን ለጓደኛዎ በመላክ ቦነስ ያግኙ!</p>
+                    <p style="font-size: 12px; color: var(--text-secondary);">ሊንኩን ለጓደኛዎ በመላክ ቦነስ ያግኙ!</p>
                     <input type="text" value="https://t.me/bravo_ethio_bingo_bot?start=ref123" readonly style="text-align: center;">
                     <button class="btn-main" onclick="alert('ሊንኩ ተኮርጇል!')">ሊንክ ኮፒ አድርግ</button>
                 </div>
@@ -426,8 +428,8 @@ HTML_TEMPLATE = """
         function switchTab(tabId) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
         }
 
         function selectRoom(price, element) {
@@ -535,7 +537,7 @@ HTML_TEMPLATE = """
             }
         }, 1000);
 
-        // Instant Bingo Verification with 20% Hidden Commission, Public Announcement & Private Disqualification
+        // Instant Bingo Verification with 20% Hidden Commission & Public Announcement
         function checkBingoWin() {
             if(isDisqualified) {
                 alert('❌ የውሸት ቢንጎ ብለው ስለተጫኑ ከዚህ ዙር ጨዋታ ውጪ ነዎት። ጨዋታው ግን ለሌሎች ቀጥሏል!');
@@ -556,21 +558,17 @@ HTML_TEMPLATE = """
             });
 
             if(markedCells.length >= 5 && isValid) {
-                // Calculation: 10 players pool, 20% commission cut silently, 80% to winner
                 let totalPool = selectedRoomPrice * 10;
-                let netWinAmount = totalPool * 0.80;
+                let netWinAmount = totalPool * 0.80; // 20% house commission deducted silently
                 currentBalance += netWinAmount;
                 updateBalanceDisplay();
 
                 let selectedCardNum = document.getElementById('cardSelect').value;
-
-                // Public Broadcast Announcement for Winner
                 let announcementText = `🏆 <b>አሸናፊ ተገኘ!</b> ተጫዋች <b>${registeredUser}</b> ካርቴላ ቁጥር <b>#${selectedCardNum}</b> ይዞ ሉንጎ (BINGO) አሸንፏል! ሽልማት: <b>${netWinAmount.toFixed(2)} ብር</b>`;
                 document.getElementById('publicAnnouncement').innerHTML = announcementText;
 
                 alert(`🎉 እንኳን ደስ አለዎት! ሉንጎ (BINGO) በትክክል ተረጋግጧል! ${netWinAmount.toFixed(2)} ብር ወደ ዋሌታዎ ገብቷል!`);
             } else {
-                // Private Disqualification for False Bingo only (Game does NOT stop)
                 isDisqualified = true;
                 document.getElementById('bingoBtn').disabled = true;
                 document.getElementById('bingoBtn').style.opacity = '0.5';
