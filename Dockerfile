@@ -2,8 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir Flask==3.0.3 pyTelegramBotAPI==4.16.1 gunicorn==21.2.0
 
 COPY . .
 
