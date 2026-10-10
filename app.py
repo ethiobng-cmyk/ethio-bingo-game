@@ -6,9 +6,9 @@ from telebot import types
 # Flask App Initialization
 app = Flask(__name__)
 
-# Telebot Initialization (Insert your Bot Token here if needed, or set via environment)
-BOT_TOKEN = os.getenv("BOT_TOKEN", "YOUR_TELEGRAM_BOT_TOKEN")
-bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML") if BOT_TOKEN != "YOUR_TELEGRAM_BOT_TOKEN" else None
+# Direct Bot Token configuration to avoid Railway secrets build issues
+BOT_TOKEN = "8915919521:AAGA_nI0C-vYpr5AwSYyk4GKYxqF-O3OLT0"
+bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
 
 # In-Memory Database for Users
 users_db = {}
@@ -235,9 +235,7 @@ if bot:
         user_name = users_db.get(chat_id, {}).get("name", "ተጫዋች")
         
         markup = types.InlineKeyboardMarkup(row_width=2)
-        
-        # Replace URL with your actual Railway app URL if needed
-        web_app_url = os.getenv("WEBAPP_URL", "https://ethio-bingo-game-production-e562.up.railway.app")
+        web_app_url = "https://ethio-bingo-game-production-e562.up.railway.app"
         
         btn_play = types.InlineKeyboardButton("🎮 ጨዋታ ጀምር (Play)", web_app_url=types.WebAppInfo(url=web_app_url))
         btn_rules = types.InlineKeyboardButton("📜 የጨዋታው ህጎች", callback_data="rules")
